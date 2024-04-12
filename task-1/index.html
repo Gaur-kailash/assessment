@@ -3,9 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>React Frontend Task</title><script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        body{
+            margin: 0%;
+            padding: 0%;
+        }
+    </style>
 </head>
 <body>
-    
+    <div id="root"></div>
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script type="text/babel">
+        const { createRoot } = ReactDOM;
+        const { useState } = React;
+
+        function App() {
+            const data = ["Onboarding Call","Google search console access","Google Analytic Access","Website Access","Technical Audit","Anchor Text and Semantic Analysis","competitor Analysis","Anchor Text","Google Data Studio Report","Site level optimization"];
+            
+            let [records,setRecords] = useState({});
+
+            const handleEdit = (item, index, value) => {
+                setRecords(prevRecords => {
+                    const updatedRecords = { ...prevRecords };
+                    if (!updatedRecords[item]) {
+                        updatedRecords[item] = new Array(6).fill('');
+                    }
+                    updatedRecords[item][index] = value;
+                    return updatedRecords;
+                });
+            };
+
+            const handleSubmit = () => {
+                console.log('Data ready to post:', records);
+            };
+
+            return (
+                <div>
+                    <table style={{backgroundColor: "#db96a2"}}>
+                        <thead>
+                            <tr>
+                                Month 1
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+                            {data?.map((item,i) => (
+                                <tr key={i}>
+                                    <td>
+                                        {item}
+                                    </td>
+                                    {[...Array(6)].map((_, j) => (
+                                        <td key={j}>
+                                            <input
+                                                type="text"
+                                                onChange={e => handleEdit(item, j, e.target.value)}
+                                            />
+                                        </td>
+                                    ))}
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                    <button onClick={handleSubmit}>Submit</button>
+                </div>
+            );
+        }
+        const rootElement = document.getElementById('root');
+        const root = createRoot(rootElement);
+        root.render(<App />, );
+    </script>
 </body>
 </html>
