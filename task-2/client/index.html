@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Note App</title>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://kit.fontawesome.com/7421adf202.js" crossorigin="anonymous"></script>
+    <style>
+        body {
+            margin: 0%;
+            padding: 0%;
+        }
+        #page{
+            height: 100vh;
+            margin: 0%;
+            background-color: rgb(0, 199, 186);
+        }
+        .navbar{
+            display: flex;
+            background-color: rgb(27, 27, 27);
+            padding: 5px;
+            color: white;
+            align-items: center;
+            height: 35px;
+        }
+        .form-container{
+            text-align: center;
+            margin:auto;
+        }
+        .form-container form div{
+            margin: 5px;
+        }
+        .form-container form div label {
+            display: inline-block;
+            width: 90px;
+        }
+        .notes-container {
+            display: flex;
+            margin: 10px;
+        }
+        .note{
+            margin: 10px;
+            background-color: white;
+            border-radius: 10px;
+            padding: 15px;
+        }
+        .footer{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="root"></div>
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script type="text/babel">
+        const { createRoot } = ReactDOM;
+        const { useState, useEffect } = React;
+
+        function App() {
+            const [notes, setNotes] = useState([]);
+            const [noteData, setData] = useState({});
+            const fetchNotes = async()=>{
+                let response =await fetch("http://localhost:3000/api/notes");
+                response = await response.json();
+                setNotes(response);
+            }
+            const handleSubmit = async(e)=>{
+                e.preventDefault();
+                try{
+                    const response = await fetch("http://localhost:3000/api/notes",{
+                        method : "POSt",
+                        headers : {
+                            'content-type' : "application/json"
+                        },
+                        body : JSON.stringify(noteData)
+                    })
+                    response = await response.json();
+                    console.log(response,"after submit");
+                    fetchNotes();
+                }catch(err){
+                console.log("Error while submitting",err);
+            }
+            }
+            const deleteNote = async (id)=>{
+                try{
+                    const response = await fetch(`http://localhost:3000/api/notes/${id}`,{
+                    method: 'delete',
+                    headers : {
+                        'Content-type' : "application/json"
+                    }
+                })
+                fetchNotes();
+                }
+                catch(err){
+                    console.log("Error while deleting",err);
+                }
+            }
+            useEffect(()=>{
+                fetchNotes();
+            },[])
+            return (
+                <div id="page">
+                    <div className="navbar"><h3>Notes</h3></div>
+                    <div className="content">
+                        <div className="form-container">
+                            <form onSubmit={(e)=>handleSubmit(e)}>
+                                <h4>Take a Note :</h4>
+                                <div>
+                                <label htmlFor="title">Title</label>
+                                <input type="text" name="title" onChange={(e)=>{setData({...noteData,[e.target.name]:e.target.value})}} />
+                                </div>
+                                <div>
+                                <label htmlFor="content">Content</label>
+                                <input type="text" name="content" onChange={(e)=>{setData({...noteData,[e.target.name]:e.target.value})}} />
+                                <div><button type="submit">Add Note</button></div>
+                                </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div className="notes-container">
+                            {notes.length > 0 && notes.map((note,index)=>{
+                                return(
+                                    <div className="note">
+                                        <h3>{note.title}</h3>
+                                        <p>{note.content}</p>
+                                        <div class="footer">
+                                            <p>{note['created_at'].slice(0,10)}</p>
+                                            <i class="fa-solid fa-trash" onClick={()=>{deleteNote(note.id)}}></i>
+                                            </div>
+                                        </div>
+                                )
+                            }) }</div>
+                    </div>
+            );
+        }
+        const rootElement = document.getElementById('root');
+        const root = createRoot(rootElement);
+        root.render(<App />,);
+    </script>
+</body>
+
+</html>
