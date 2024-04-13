@@ -73,7 +73,7 @@
             const handleSubmit = async(e)=>{
                 e.preventDefault();
                 try{
-                    const response = await fetch("http://localhost:3000/api/notes",{
+                    let response = await fetch("http://localhost:3000/api/notes",{
                         method : "POSt",
                         headers : {
                             'content-type' : "application/json"
@@ -83,6 +83,7 @@
                     response = await response.json();
                     console.log(response,"after submit");
                     fetchNotes();
+                    setData({})
                 }catch(err){
                 console.log("Error while submitting",err);
             }
@@ -113,11 +114,11 @@
                                 <h4>Take a Note :</h4>
                                 <div>
                                 <label htmlFor="title">Title</label>
-                                <input type="text" name="title" onChange={(e)=>{setData({...noteData,[e.target.name]:e.target.value})}} />
+                                <input type="text" name="title" value={noteData.title} onChange={(e)=>{setData({...noteData,[e.target.name]:e.target.value})}} />
                                 </div>
                                 <div>
                                 <label htmlFor="content">Content</label>
-                                <input type="text" name="content" onChange={(e)=>{setData({...noteData,[e.target.name]:e.target.value})}} />
+                                <input type="text" name="content" value={noteData.content} onChange={(e)=>{setData({...noteData,[e.target.name]:e.target.value})}} />
                                 <div><button type="submit">Add Note</button></div>
                                 </div>
                                 </form>
