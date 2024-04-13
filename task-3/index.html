@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>React Frontend Task</title>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        body {
+            margin: 15px;
+            padding: 0%;
+        }
+        table{
+            margin: 5px;
+        }
+        table , tr,th ,td {
+            padding: 5px;
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="root"></div>
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script type="text/babel">
+        const { createRoot } = ReactDOM;
+        const { useState, useEffect } = React;
+
+        function App() {
+            const [phone, setPhone] = useState();
+            const [data, setData] = useState({});
+            const getHeaders = async () => {
+                setData({});
+                try{
+                    let response = await fetch(`https://chimpu.xyz/api/post.php
+            `, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': "application/json"
+                    },
+                    body: JSON.stringify({ phonenumber: phone })
+                })
+                
+                response.headers.forEach((value, name) => {
+                    setData((prevState)=>{
+                        let data = {...prevState,[name]:value};
+                        return data
+                    })
+      });
+                response = await response.json();
+                }catch(err){
+                    console.log(err,"error")
+                }
+            }
+            return (
+                <div>
+                    <label htmlFor="phone">Phone : </label>
+                    <input type="number" name="phone" onChange={(e) => { setPhone(e.target.value)
+                    console.log(e.target.value) }} placeholder="Enter number" />
+                    <button onClick={getHeaders}>Get Headers</button>
+                    {Object.keys(data).length>0 && <table>
+                        <thead>
+                            <tr>
+                                <th>Key</th>
+                                <th>Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {
+                                    Object.keys(data).map(key=>{
+                                        return(<tr>
+                                            
+                                        <td>{key}</td>
+                                        <td>{data[key]}</td></tr>)
+                                    })
+                                }
+                        </tbody>
+                    </table>}
+                </div>
+            );
+        }
+        const rootElement = document.getElementById('root');
+        const root = createRoot(rootElement);
+        root.render(<App />,);
+    </script>
+</body>
+
+</html>
